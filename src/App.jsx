@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createClient } from '@supabase/supabase-js';
 import { 
   Shield, Globe, Sparkles, LogOut, Settings, Calendar, 
-  Bell, DollarSign, Award
+  Bell, DollarSign, Award, Utensils
 } from 'lucide-react';
+
+// Inicialização segura do cliente Supabase usando as variáveis de ambiente da Vercel/Vite
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Dicionário de Traduções Nativas para os 4 Idiomas Exigidos
 const translations = {
@@ -161,17 +167,134 @@ export default function App() {
   const [viewMode, setViewMode] = useState('landing'); // 'landing', 'login', 'manager', 'customer'
   const [primaryColor, setPrimaryColor] = useState('#0D9488');
   const [logoUrl, setLogoUrl] = useState('');
-  const [restaurantName, setRestaurantName] = useState('Camps Bay Bistro');
+  const [restaurantName, setRestaurantName] = useState('MesaVibe Bistro');
   const [chefSlogan, setChefSlogan] = useState("Today's Special: Fresh Atlantic Cob & Local Stellenbosch Chardonnay Pairing");
   
   const [tableInfo] = useState({ number: 4, guests: 2 });
   const [feedback, setFeedback] = useState({ rating: 5, name: '', contact: '' });
-  const [serviceLogs] = useState([
-    { id: 1, table: 4, action: 'Waiter Called', status: 'Pending', time: '19:42' },
-    { id: 2, table: 2, action: 'Bill Requested', status: 'Completed', time: '19:30' }
-  ]);
+  
+  // Estados dinâmicos vindos do Supabase
+  const [menuItems, setMenuItems] = useState([]);
+  const [serviceLogs, setServiceLogs] = useState([]);
+  const [tenantId, setTenantId] = useState(null);
+  const [loadingMenu, setLoadingMenu] = useState(false);
 
   const t = translations[currentLang] || translations['en-ZA'];
+
+  // Carregar dados dinâmicos do Supabase ao iniciar
+  useEffect(() => {
+    async function loadTenantAndMenu() {
+      setLoadingMenu(true);
+      try {
+        // 1. Buscar o restaurante ativo pelo subdomínio (ex: 'mesavibe')
+        const { data: tenantData, error: tenantError } = await supabase
+          .from('tenants')
+          .select('*')
+          .eq('subdomain', 'mesavibe')
+          .single();
+
+        if (tenantError) {
+          console.warn('Aviso: Nenhum tenant encontrado com o subdomínio, a usar dados padrão.', tenantError);
+          return;
+        }
+
+        if (tenantData) {
+          setTenantId(tenantData.id);
+          setRestaurantName(tenantData.name);
+          if (tenantData.logo_url) setLogoUrl(tenantData.logo_url);
+          if (tenantData.slogan) setChefSlogan(tenantData.slogan);
+
+          // 2. Buscar pratos do menu associados a este restaurante
+          const { data: menuData, error: menuError } = await supabase
+            .from('menu_items')
+            .select('*')
+            .eq('tenant_id', tenantData.id)
+            .eq('is_available', true);
+
+          if (!menuError && menuData) {
+            setMenuItems(menuData);
+          }
+
+          // 3. Buscar registos de atendimento (Service Logs / KDS)
+          const { data: logsData, error: logsError } = await supabase
+            .from('service_logs')
+            .select('*')
+            .eq('tenant_id', tenantData.id)
+            .order('created_at', { ascending: false });
+
+          if (!logsError && logsData) {
+            setServiceLogs(logsData.map(log => ({
+              id: log.id.slice(0, 6),
+              table: log.table_number,
+              action: log.action_type === 'waiter_call' ? 'Waiter Called' : 'Bill Requested',
+              status: log.status,
+              time: new Date(log.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            })));
+          }
+        }
+      } catch (err) {
+        console.error('Erro ao comunicar com o Supabase:', err);
+      } finally {
+        setLoadingMenu(false);
+      }
+    }
+
+    loadTenantAndMenu();
+  }, []);
+
+  // Função para chamar o garçom e gravar na base de dados em tempo real
+  const handleCallWaiter = async () => {
+    if (!tenantId) {
+      alert("Waiter called successfully! (Modo Offline)");
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('service_logs')
+        .insert([
+          {
+            tenant_id: tenantId,
+            table_number: tableInfo.number,
+            action_type: 'waiter_call',
+            status: 'pending'
+          }
+        ]);
+
+      if (error) throw error;
+      alert("Waiter called successfully! A staff member has been notified.");
+    } catch (err) {
+      console.error('Erro ao chamar o garçom:', err);
+      alert("Erro ao notificar o garçom. Tente novamente.");
+    }
+  };
+
+  // Função para pedir a conta
+  const handleRequestBill = async () => {
+    if (!tenantId) {
+      alert("Bill requested! (Modo Offline)");
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('service_logs')
+        .insert([
+          {
+            tenant_id: tenantId,
+            table_number: tableInfo.number,
+            action_type: 'bill_request',
+            status: 'pending'
+          }
+        ]);
+
+      if (error) throw error;
+      alert("Bill requested successfully! The cashier is preparing your bill.");
+    } catch (err) {
+      console.error('Erro ao pedir a conta:', err);
+      alert("Erro ao pedir a conta. Tente novamente.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans antialiased">
@@ -285,7 +408,7 @@ export default function App() {
                 <input 
                   type="email" 
                   required 
-                  defaultValue="manager@campsbaybistro.co.za"
+                  defaultValue="manager@mesavibe.com"
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none" 
                 />
               </div>
@@ -390,19 +513,25 @@ export default function App() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {serviceLogs.map((log) => (
-                    <tr key={log.id} className="hover:bg-slate-50">
-                      <td className="py-3 font-mono text-slate-500">#{log.id}</td>
-                      <td className="py-3 font-medium">Mesa {log.table}</td>
-                      <td className="py-3">{log.action}</td>
-                      <td className="py-3">
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
-                          {log.status}
-                        </span>
-                      </td>
-                      <td className="py-3 text-slate-400">{log.time}</td>
+                  {serviceLogs.length === 0 ? (
+                    <tr>
+                      <td colSpan="5" className="py-4 text-center text-slate-400">Nenhum registo de atendimento recente encontrado no Supabase.</td>
                     </tr>
-                  ))}
+                  ) : (
+                    serviceLogs.map((log) => (
+                      <tr key={log.id} className="hover:bg-slate-50">
+                        <td className="py-3 font-mono text-slate-500">#{log.id}</td>
+                        <td className="py-3 font-medium">Mesa {log.table}</td>
+                        <td className="py-3">{log.action}</td>
+                        <td className="py-3">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                            {log.status}
+                          </span>
+                        </td>
+                        <td className="py-3 text-slate-400">{log.time}</td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -410,7 +539,7 @@ export default function App() {
         </main>
       )}
 
-      {/* 4. VISTA DE CLIENTE NA MESA (QR CODE) */}
+      {/* 4. VISTA DE CLIENTE NA MESA (QR CODE) COM MENU DINÂMICO */}
       {viewMode === 'customer' && (
         <main className="max-w-xl mx-auto px-4 py-8 space-y-6">
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
@@ -439,18 +568,45 @@ export default function App() {
             <div className="flex gap-2">
               <button 
                 style={{ backgroundColor: primaryColor }}
-                onClick={() => alert("Waiter called successfully!")}
+                onClick={handleCallWaiter}
                 className="flex-1 text-white py-2.5 rounded-xl text-xs font-semibold shadow-sm hover:opacity-95 transition flex items-center justify-center gap-1.5"
               >
                 <Bell className="w-3.5 h-3.5" /> {t.callWaiter}
               </button>
               <button 
-                onClick={() => alert("Bill requested!")}
+                onClick={handleRequestBill}
                 className="flex-1 bg-slate-100 text-slate-700 border border-slate-200 py-2.5 rounded-xl text-xs font-semibold hover:bg-slate-200 transition flex items-center justify-center gap-1.5"
               >
                 <DollarSign className="w-3.5 h-3.5" /> {t.requestBill}
               </button>
             </div>
+          </div>
+
+          {/* LISTA DINÂMICA DE PRATOS DO MENU (VINDO DO SUPABASE) */}
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+            <h3 className="font-semibold text-sm text-slate-900 flex items-center gap-2">
+              <Utensils className="w-4 h-4 text-teal-600" /> Menu Digital do Restaurante
+            </h3>
+            {loadingMenu ? (
+              <p className="text-xs text-slate-400 text-center py-4">A carregar menu do Supabase...</p>
+            ) : menuItems.length === 0 ? (
+              <p className="text-xs text-slate-400 text-center py-4">Nenhum prato encontrado na base de dados para este restaurante.</p>
+            ) : (
+              <div className="space-y-3">
+                {menuItems.map((item) => (
+                  <div key={item.id} className="border border-slate-100 p-3 rounded-xl flex justify-between items-center bg-slate-50/50">
+                    <div>
+                      <h4 className="font-semibold text-xs text-slate-900">{item.name}</h4>
+                      <p className="text-[11px] text-slate-500 mt-0.5">{item.description}</p>
+                      <span className="text-xs font-bold text-teal-600 mt-1 inline-block">R$ {Number(item.price).toFixed(2)}</span>
+                    </div>
+                    {item.image_url && (
+                      <img src={item.image_url} alt={item.name} className="w-14 h-14 object-cover rounded-lg border border-slate-200 shrink-0 ml-3" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
