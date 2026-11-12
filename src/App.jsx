@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { 
   Shield, Globe, Sparkles, LogOut, Settings, Calendar, 
   Bell, DollarSign, Award, Utensils, UserCheck, Lock, CheckCircle,
-  Wine, Users, Clock, AlertCircle, ChevronRight, Check, Trash2, Plus, Save
+  Wine, Users, Clock, AlertCircle, ChevronRight, Check, Trash2, Plus, Save, User
 } from 'lucide-react';
 
 // ==========================================
@@ -40,8 +40,8 @@ const translations = {
     customerView: "Interface do Cliente na Mesa",
     logout: "Terminar Sessão",
     tableNumber: "Número da Mesa",
-    peopleCount: "Número de Convidados",
-    todaysSpecial: "Especial do Chef / Sugestão do Dia",
+    peopleCount: "Número de Convidados (Até 6+)",
+    todaysSpecial: "Especial do Chef / Peixe do Dia",
     callWaiter: "Chamar Garçom",
     requestBill: "Pedir a Conta",
     feedbackTitle: "Deixe a sua Avaliação",
@@ -55,12 +55,12 @@ const translations = {
     reports: "Relatórios e Atendimentos",
     saveChanges: "Guardar Alterações no Supabase",
     tableOnboardingTitle: "Bem-vindo ao Restaurante",
-    tableOnboardingSubtitle: "Por favor, indique os detalhes da sua mesa para iniciarmos a experiência.",
+    tableOnboardingSubtitle: "Por favor, indique os detalhes da sua mesa para prepararmos o melhor atendimento.",
     allergiesLabel: "Alergias ou Restrições (Ex: Glúten, Amendoim)",
     meatTempLabel: "Ponto da Carne / Hambúrguer",
     noMeatTemp: "Não aplicável (Prato sem carne)",
     continueMenu: "Aceder ao Menu Digital",
-    estWaitingTime: "Tempo estimado médio de espera: ~15 a 20 minutos",
+    estWaitingTime: "Tempo estimado médio de espera na cozinha: ~15 a 20 minutos",
     menuCategories: "Categorias do Menu",
     manageMenu: "Gestão Completa de Menus & Bebidas",
     manageTables: "Gestão de Mesas e Limite de Clientes",
@@ -79,7 +79,8 @@ const translations = {
     tabMenu: "Menu e Pratos",
     tabTables: "Mesas",
     tabReports: "Relatórios",
-    tabSettings: "Definições"
+    tabSettings: "Definições",
+    assignedWaiterNotice: "O seu garçom dedicado para esta mesa é:"
   },
   'en-ZA': {
     brandTitle: "MesaVibe by Canzele Tech",
@@ -104,8 +105,8 @@ const translations = {
     customerView: "Digital Table Interface",
     logout: "Sign Out",
     tableNumber: "Table Number",
-    peopleCount: "Number of Guests",
-    todaysSpecial: "Chef's Special / Daily Recommendation",
+    peopleCount: "Number of Guests (Up to 6+)",
+    todaysSpecial: "Chef's Special / Fish of the Day",
     callWaiter: "Call Waiter",
     requestBill: "Request Bill",
     feedbackTitle: "Leave Your Feedback",
@@ -119,12 +120,12 @@ const translations = {
     reports: "Reports & Service Logs",
     saveChanges: "Save Changes to Supabase",
     tableOnboardingTitle: "Welcome to the Restaurant",
-    tableOnboardingSubtitle: "Please provide your table details to begin your dining experience.",
+    tableOnboardingSubtitle: "Please provide your table details so we can tailor your dining experience.",
     allergiesLabel: "Allergies or Dietary Restrictions (e.g. Gluten, Nuts)",
     meatTempLabel: "Meat / Burger Cooking Temperature",
     noMeatTemp: "Not applicable (Non-meat dish)",
     continueMenu: "Access Digital Menu",
-    estWaitingTime: "Estimated average waiting time: ~15 to 20 minutes",
+    estWaitingTime: "Estimated kitchen waiting time: ~15 to 20 minutes",
     menuCategories: "Menu Categories",
     manageMenu: "Complete Menu & Beverage Management",
     manageTables: "Table Management & Guest Limits",
@@ -143,7 +144,8 @@ const translations = {
     tabMenu: "Menu & Dishes",
     tabTables: "Tables",
     tabReports: "Reports",
-    tabSettings: "Settings"
+    tabSettings: "Settings",
+    assignedWaiterNotice: "Your dedicated waiter for this table is:"
   },
   af: {
     brandTitle: "MesaVibe deur Canzele Tech",
@@ -168,8 +170,8 @@ const translations = {
     customerView: "Digitale Tafel Koppelvlak",
     logout: "Teken Uit",
     tableNumber: "Tafelnommer",
-    peopleCount: "Aantal Gaste",
-    todaysSpecial: "Sjef se Spesiale / Daaglikse Aanbeveling",
+    peopleCount: "Aantal Gaste (Tot 6+)",
+    todaysSpecial: "Sjef se Spesiale / Vis van die Dag",
     callWaiter: "Roep Kelner",
     requestBill: "Vra vir Rekening",
     feedbackTitle: "Los jou Terugvoer",
@@ -188,7 +190,7 @@ const translations = {
     meatTempLabel: "Vleis / Burger Gaarmaaktemperatuur",
     noMeatTemp: "Nie van toepassing nie (Geen vleis gereg nie)",
     continueMenu: "Toegang tot Digitale Spyskaart",
-    estWaitingTime: "Geraamde gemiddelde wagtyd: ~15 tot 20 minute",
+    estWaitingTime: "Geraamde kombuistyd: ~15 tot 20 minute",
     menuCategories: "Spyskaart Kategorieë",
     manageMenu: "Volledige Spyskaart & Drank Bestuur",
     manageTables: "Tafel Bestuur & Gaste Limiete",
@@ -207,7 +209,8 @@ const translations = {
     tabMenu: "Spyskaart",
     tabTables: "Tafels",
     tabReports: "Verslae",
-    tabSettings: "Instellings"
+    tabSettings: "Instellings",
+    assignedWaiterNotice: "Jou toegewyde kelner vir hierdie tafel is:"
   },
   xh: {
     brandTitle: "MesaVibe nguCanzele Tech",
@@ -232,8 +235,8 @@ const translations = {
     customerView: "Ujongano Lwetafile",
     logout: "Phuma",
     tableNumber: "Inombolo yetafile",
-    peopleCount: "Inani labantu",
-    todaysSpecial: "Okukhethekileyo kukaChef",
+    peopleCount: "Inani labantu (Ukuya kuma-6+)",
+    todaysSpecial: "Okukhethekileyo kukaChef / Intlanzi",
     callWaiter: "Biza Umlindi",
     requestBill: "Cela Umrhumo",
     feedbackTitle: "Shiya Imbono Yakho",
@@ -252,7 +255,7 @@ const translations = {
     meatTempLabel: "Izinga lokupheka inyama",
     noMeatTemp: "Ayisebenzi (Akukho nyama)",
     continueMenu: "Ngena Kwimenyu",
-    estWaitingTime: "Ixesha eliqikelelweyo: ~15 ukuya kuma-20 imizuzu",
+    estWaitingTime: "Ixesha eliqikelelweyo lekhitshi: ~15 ukuya kuma-20 imizuzu",
     menuCategories: "Iindidi Zemenyu",
     manageMenu: "Ulawulo Lwemenyu Nezinto zokusela",
     manageTables: "Ulawulo Lwetafile Kunye Nemida",
@@ -271,7 +274,8 @@ const translations = {
     tabMenu: "Menyu",
     tabTables: "Iitafile",
     tabReports: "Iingxelo",
-    tabSettings: "Izilungiselelo"
+    tabSettings: "Izilungiselelo",
+    assignedWaiterNotice: "Umlindi wakho ozinikeleyo kule tafile ngu:"
   }
 };
 
@@ -284,7 +288,7 @@ export default function App() {
   const [primaryColor, setPrimaryColor] = useState('#374151');
   const [logoUrl, setLogoUrl] = useState('');
   const [restaurantName, setRestaurantName] = useState('Camps Bay Social Bistro');
-  const [chefSlogan, setChefSlogan] = useState("Fresh Atlantic Catch & Stellenbosch Wine Pairings");
+  const [chefSlogan, setChefSlogan] = useState("Fresh Atlantic Cob & Stellenbosch Chardonnay Pairing");
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [authError, setAuthError] = useState('');
@@ -299,9 +303,10 @@ export default function App() {
 
   const [tableSetup, setTableSetup] = useState({
     number: 3,
-    guests: 2,
+    guests: 4,
     allergies: '',
     meatTemp: 'Medium',
+    assignedWaiter: 'Sipho Khumalo',
     completedOnboarding: false
   });
 
@@ -312,7 +317,7 @@ export default function App() {
 
   const [menuItems, setMenuItems] = useState([
     { id: 1, name: 'Stellenbosch Bobotie', category: 'Pratos Principais', price: 165.00, description: 'Traditional spiced minced meat with savory custard and yellow rice.', image_url: 'https://images.unsplash.com/photo-1544025162-d76694265947', hasMeat: true },
-    { id: 2, name: 'Atlantic Grilled Cob', category: 'Pratos Principais', price: 210.00, description: 'Fresh line fish served with herb butter and roasted baby potatoes.', image_url: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2', hasMeat: false },
+    { id: 2, name: 'Atlantic Grilled Cob (Fish of the Day)', category: 'Pratos Principais', price: 210.00, description: 'Fresh line fish served with herb butter and roasted baby potatoes.', image_url: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2', hasMeat: false },
     { id: 3, name: 'Kanonkop Paul Sauer Red Wine', category: 'Bebidas & Vinhos', price: 450.00, description: 'World-class Stellenbosch red blend with rich berry notes.', image_url: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3', hasMeat: false },
     { id: 4, name: 'Malva Pudding with Custard', category: 'Sobremesas', price: 85.00, description: 'Spongy caramelized Cape dessert served warm.', image_url: 'https://images.unsplash.com/photo-1587314168485-3236d6710814', hasMeat: false }
   ]);
@@ -325,7 +330,7 @@ export default function App() {
     { id: 3, number: 3, maxGuests: 6, status: 'Ativa' }
   ]);
   const [newTableNum, setNewTableNum] = useState(4);
-  const [newTableLimit, setNewTableLimit] = useState(4);
+  const [newTableLimit, setNewTableLimit] = useState(6);
 
   const [serviceLogs, setServiceLogs] = useState([
     { id: 'log-1', table: 3, action: 'Waiter Called', status: 'Pending', time: '13:10', type: 'waiter' },
@@ -394,7 +399,7 @@ export default function App() {
       type: 'waiter'
     };
     setServiceLogs([newLog, ...serviceLogs]);
-    alert(currentLang === 'pt' ? "Garçom chamado com sucesso! A equipa foi notificada." : "Waiter called successfully! Staff notified.");
+    alert(currentLang === 'pt' ? `Garçom (${tableSetup.assignedWaiter}) chamado com sucesso!` : `Waiter (${tableSetup.assignedWaiter}) notified successfully!`);
   });
 
   const handleRequestBill = () => handleSecureAction(() => {
@@ -407,7 +412,7 @@ export default function App() {
       type: 'bill'
     };
     setServiceLogs([newLog, ...serviceLogs]);
-    alert(currentLang === 'pt' ? "Conta solicitada com sucesso! O caixa está a preparar." : "Bill requested successfully! Cashier is preparing.");
+    alert(currentLang === 'pt' ? "Conta solicitada com sucesso!" : "Bill requested successfully!");
   });
 
   const handleCompleteLog = (id) => {
@@ -882,6 +887,7 @@ export default function App() {
         </main>
       )}
 
+      {/* ONBOARDING DA MESA DO CLIENTE (OBRIGATÓRIO ANTES DO MENU) */}
       {viewMode === 'onboarding' && !tableSetup.completedOnboarding && (
         <main className="max-w-md mx-auto px-6 py-16">
           <div className="bg-white p-8 rounded-3xl border border-gray-200 shadow-xl space-y-6">
@@ -905,11 +911,11 @@ export default function App() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">{t.peopleCount} (Máx: 6)</label>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">{t.peopleCount}</label>
                 <input 
                   type="number" 
                   min="1" 
-                  max="6" 
+                  max="12" 
                   value={tableSetup.guests} 
                   onChange={(e) => setTableSetup({ ...tableSetup, guests: Number(e.target.value) })}
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm focus:ring-2 focus:ring-gray-900 focus:outline-none" 
@@ -941,9 +947,12 @@ export default function App() {
                 </select>
               </div>
 
-              <div className="bg-gray-50 p-3.5 rounded-xl border border-gray-200 text-center">
+              <div className="bg-gray-50 p-3.5 rounded-xl border border-gray-200 text-center space-y-1">
                 <span className="text-xs font-medium text-gray-600 flex items-center justify-center gap-1.5">
                   <Clock className="w-3.5 h-3.5" /> {t.estWaitingTime}
+                </span>
+                <span className="text-[11px] text-gray-500 block">
+                  {t.assignedWaiterNotice} <strong className="text-gray-800">{tableSetup.assignedWaiter}</strong>
                 </span>
               </div>
 
@@ -959,6 +968,7 @@ export default function App() {
         </main>
       )}
 
+      {/* VISTA DE CLIENTE NA MESA (MENU ZAR COM DESTAQUE DO ESPECIAL DO DIA) */}
       {viewMode === 'onboarding' && tableSetup.completedOnboarding && (
         <main className="max-w-xl mx-auto px-4 py-8 space-y-6">
           <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs space-y-4">
@@ -969,11 +979,12 @@ export default function App() {
               </div>
               <div className="text-right">
                 <span className="inline-block px-3 py-1 bg-gray-100 text-gray-800 text-xs font-semibold rounded-full border border-gray-200">
-                  {tableSetup.guests} Guests | Ponto: {tableSetup.meatTemp}
+                  {tableSetup.guests} Guests | Garçom: {tableSetup.assignedWaiter}
                 </span>
               </div>
             </div>
 
+            {/* DESTAQUE OBRIGATÓRIO: ESPECIAL DO DIA / PEIXE DO DIA */}
             <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 flex items-start gap-3">
               <Award className="w-5 h-5 text-gray-700 shrink-0 mt-0.5" />
               <div>
